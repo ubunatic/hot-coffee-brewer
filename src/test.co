@@ -1,0 +1,37 @@
+# Copyright (c) 2011 Uwe Jugel
+
+say = (args...)-> console.log.apply console, args
+
+test1 = do ->
+	say '''
+	---------------------------------------------------
+	test.co: "Add your tests to src/test.co!"
+	---------------------------------------------------
+	'''
+	say "Starting tests...\n"
+			
+	World = require("./world.js").World
+
+	earth = new World("Earth")
+	thera = new World("Thera")
+
+	say earth.getInfo()
+	say thera.getInfo()
+
+	say '''
+	---------------------------------------------------
+	Starting async spinning...	
+	\n'''
+	earth.spin(10)
+	thera.spin(10)
+
+	#wait 100ms to finish spinning
+	setTimeout (-> test2()), 100
+
+test2 = ->
+	# further testing goes here
+	say '''			
+	Waited 100ms Worlds to finish spinning.
+	---------------------------------------------------
+	Testing finished!
+	'''

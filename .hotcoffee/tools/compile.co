@@ -1,0 +1,182 @@
+### Copyright (c) 2011 Uwe Jugel
+
+	Hot Coffee Brewer
+	=================
+	
+	This file is compile.co a part of the Hot Coffee Brewer
+	
+	- is compiled via hotcoffee.js
+	- is used to compile *.co files in src to *.js files in lib
+	- runs in node.js in Linux and Windows (no dependencies)
+	
+	https://github.com/ubunatic/Hot-Coffee-Brewer
+	
+###
+
+# tasks: all, test
+build = (task, buildfiles = []) ->
+	exec = require("child_process").exec
+	coffee = require("./tools/coffee.js").CoffeeScript
+	cotest = require("./tmp_cotest.js")
+	
+	fs = require "fs"
+	
+	isBuildFile = (file) ->
+		(file == "./.hotcoffee/tools/compile.co") or
+		(file == "./.hotcoffee/tools/cotest.co")
+
+	src2lib = (file, keepFileName=false) ->
+		regex_match_srcpath = /^[\.\/]*\/src\//
+		regex_match_cofile = /\/[^\/]*\.co$/
+		regex_match_coext = /\.co$/
+
+		prefix = file.match(regex_match_srcpath)
+		
+		if !prefix then prefix = "" else prefix = prefix[0]
+		
+		file = prefix.replace("src","lib") + file.replace(regex_match_srcpath, "")
+		if keepFileName
+			file = file.replace(regex_match_coext, ".js")
+		else	
+			file = file.replace(regex_match_cofile, "")
+		return file
+		
+	string2files = (string) ->
+		(file for file in (string.split "\n") when file.trim() != "")
+		
+	findCoffeeFiles = (dirname, files) ->
+		dir = fs.readdirSync(dirname)
+		
+		for file in dir then do ->
+			statFile = file
+			stats = fs.statSync dirname+"/"+statFile
+			if stats.isDirectory()
+				findCoffeeFiles( dirname+"/"+statFile, files )
+			else if stats.isFile() && statFile.match(/\.co$/)
+				files.push(dirname+"/"+statFile)
+
+	updir_count = 0
+	findSrcDir = (dirname) ->
+		try
+			dir = fs.readdirSync dirname+"/src"
+			return dirname
+		catch error
+			#not found
+			if updir_count > 100
+				console.log "src dir not found"
+				process.exit()
+			else
+				updir_count++
+				return findSrcDir(dirname+"/..")
+
+	mkdir = (path) ->
+		mkdir_p = (parts, idx) ->
+			if parts.length > idx
+				try
+					subpath = parts[0..idx].join("/")				
+					dirExists = false
+					try	dirExists = fs.statSync(subpath).isDirectory()
+
+					if !dirExists
+						#console.log "creating: #{subpath}"
+						fs.mkdirSync subpath, 0777
+						
+					mkdir_p parts, idx+1
+						
+				catch error
+					console.log error.message
+		
+		mkdir_p path.split("/"), 0
+
+	padString = (string, maxLength, padChar=" ") ->
+		(padChar for char in [1..Math.max(maxLength-string.length,0)]).join("")
+		
+	path2gedit = (path) ->
+		path.replace("./","")
+		
+	compileFile = (file) ->
+		pad = padString(file.trgFile, 30)
+
+		try
+			cofile = fs.readFileSync(file.src, "UTF8")
+			jsfile = coffee.compile( cofile )
+			#console.log "creating dir: #{file.trg}"
+			mkdir(file.trg)
+
+			fs.writeFileSync(file.trgFile, jsfile )
+			
+			file.error = false
+			
+			console.log "#{path2gedit(file.trgFile)}:#{pad} written."
+			
+		catch error
+			regex_match_linenumber = /line\s*\d*\:/
+			file.error = true
+			msg = error.message
+			try
+				line = msg.match(regex_match_linenumber)[0].replace(/line\s*/,"").replace(":","")
+				msg = msg.replace(regex_match_linenumber, "")
+						.replace(/Parse\serror\son\s*/,"")
+						.replace(/Error:\sIn\s*/, "")
+
+				console.error "#{path2gedit(file.src)}:#{line}:#{pad.substr(line.length)} #{msg}"
+			catch error
+				console.error "#{path2gedit(file.src)}:#{pad} Unexpected compile error:\n #{ error.message }"
+
+		#exec "coffee -o #{ file.trg } -c #{ file.src }", (error, stdout, stderr) ->
+		#	if error
+
+		#errorInfo = error.message.match(/\s*Error.*In.*line.*\n/)[0]
+		#errorFile = errorInfo.replace(/\s*Error.*In\s*/,"").split(",")[0]
+		#errorLine = errorInfo.split(":")[1].replace(/.*line\s*/,"")
+		#errorText = errorInfo.split(":")[2]
+
+		#console.log errorFile+":"+errorLine+":"+errorText
+	
+	runTest = (file) ->
+		jsfile = src2lib(file, true)
+		tmpCompile = ""
+		cofile = ""
+		isFile = false
+
+		try #recompile the cofile to test for compile errors
+			if cofile = fs.readFileSync(file, "UTF8")
+				tmpCompile = coffee.compile( cofile )
+		catch error
+
+		try isFile = fs.statSync(jsfile).isFile()
+		catch error
+		
+		if tmpCompile == "" && cofile != ""
+			console.error "compile.runTest: compile error in #{file}. Test stopped."
+		else if !isFile
+			console.error "compile.runTest: #{jsfile} not found. Test stopped."
+		else
+			cotest.test jsfile
+		
+
+	cofiles = []
+	findCoffeeFiles(findSrcDir("."), cofiles)
+
+	files = (file for file in cofiles when !isBuildFile(file))
+
+	filemap = ({ src: file, trg: src2lib(file), trgFile: src2lib(file, true) } for file in files)
+
+	#console.log filemap
+
+	switch task
+		when "all"
+			for file in filemap
+				compileFile file
+		when "test"
+			runTest(buildfiles[0])
+
+	
+test = (cofile) ->
+	build "test", [cofile]
+
+buildAll = ->
+	build "all"	
+
+module.exports.buildAll = buildAll
+module.exports.test = test
