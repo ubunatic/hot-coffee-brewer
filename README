@@ -40,6 +40,7 @@
 			mkdir ~/yourproject/src
 			mkdir ~/yourproject/lib
 			cp .hotcoffee ~/yourproject
+			cd ~/yourproject
 			node build.js
 
 		This will compile all .co files in your ./src dir to .js files in ./lib
