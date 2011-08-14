@@ -1,4 +1,11 @@
-### Copyright (c) 2011 Uwe Jugel
+###
+Copyright (c) 2011 Uwe Jugel
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 	Hot Coffee Brewer
 	=================
@@ -10,41 +17,39 @@
 	- runs in node.js in Linux and Windows (no dependencies)
 	
 	https://github.com/ubunatic/Hot-Coffee-Brewer
-	
+
 ###
 
 # tasks: all, test
 build = (task, buildfiles = []) ->
-	exec = require("child_process").exec
-	coffee = require("./tools/coffee.js").CoffeeScript
-	cotest = require("./tmp_cotest.js")
+	coffee = require("./tools/coffee.js").CoffeeScript				# load coffee compiler
+	REX    = require("./tmp_comatch.js").CoRegex					# load prebuilt matches
+	CHK    = require("./tmp_cocheck.js").CoCheck					# load prebuilt checks
+	cotest = require("./tmp_cotest.js")								# load prebuilt hotcoffe tester
+	config =
+		editor: "Gedit"												# supported: "Gedit"; planned: "NotepadPP", "Eclipse"
+		logWrites: no
+		formatErrors: no
 	
 	fs = require "fs"
-	
-	isBuildFile = (file) ->
-		(file == "./.hotcoffee/tools/compile.co") or
-		(file == "./.hotcoffee/tools/cotest.co")
+	#test 
 
 	src2lib = (file, keepFileName=false) ->
-		regex_match_srcpath = /^[\.\/]*\/src\//
-		regex_match_cofile = /\/[^\/]*\.co$/
-		regex_match_coext = /\.co$/
-
-		prefix = file.match(regex_match_srcpath)
+		prefix = file.match(REX.match_srcpath)						# check if folder is like "./src/..."
 		
-		if !prefix then prefix = "" else prefix = prefix[0]
+		if !prefix then prefix = "" else prefix = prefix[0]			# save src prefix
 		
-		file = prefix.replace("src","lib") + file.replace(regex_match_srcpath, "")
+		file = prefix.replace("src","lib") + file.replace(REX.match_srcpath, "") # replace src with lib
 		if keepFileName
-			file = file.replace(regex_match_coext, ".js")
-		else	
-			file = file.replace(regex_match_cofile, "")
+			file = file.replace(REX.match_coext, ".js")				# replace extension
+		else
+			file = file.replace(REX.match_cofile, "")				# remove fileame
 		return file
 		
 	string2files = (string) ->
 		(file for file in (string.split "\n") when file.trim() != "")
 		
-	findCoffeeFiles = (dirname, files) ->
+	findCoffeeFiles = (dirname, files) ->							# savely find all .co file in a dir
 		dir = fs.readdirSync(dirname)
 		
 		for file in dir then do ->
@@ -56,24 +61,23 @@ build = (task, buildfiles = []) ->
 				files.push(dirname+"/"+statFile)
 
 	updir_count = 0
-	findSrcDir = (dirname) ->
+	findSrcDir = (dirname) ->										# savely find ./src dir
 		try
 			dir = fs.readdirSync dirname+"/src"
 			return dirname
 		catch error
-			#not found
 			if updir_count > 100
-				console.log "src dir not found"
+				console.log "'src' dir not found"
 				process.exit()
 			else
 				updir_count++
 				return findSrcDir(dirname+"/..")
 
-	mkdir = (path) ->
+	mkdir = (path) ->												# savely create target dirs
 		mkdir_p = (parts, idx) ->
 			if parts.length > idx
 				try
-					subpath = parts[0..idx].join("/")				
+					subpath = parts[0..idx].join("/")
 					dirExists = false
 					try	dirExists = fs.statSync(subpath).isDirectory()
 
@@ -88,26 +92,27 @@ build = (task, buildfiles = []) ->
 		
 		mkdir_p path.split("/"), 0
 
-	padString = (string, maxLength, padChar=" ") ->
+	padString = (string, maxLength, padChar=" ") ->					# generate padding for a string + maxLength
 		(padChar for char in [1..Math.max(maxLength-string.length,0)]).join("")
 		
-	path2gedit = (path) ->
-		path.replace("./","")
+	path2edit = (path) ->											# format output for editors
+		switch config.editor
+			when "Gedit" then path.replace("./","")
 		
 	compileFile = (file) ->
 		pad = padString(file.trgFile, 30)
 
 		try
-			cofile = fs.readFileSync(file.src, "UTF8")
-			jsfile = coffee.compile( cofile )
-			#console.log "creating dir: #{file.trg}"
-			mkdir(file.trg)
+			cofile = fs.readFileSync(file.srcFile, "UTF8")				# read .co source
+			jsfile = coffee.compile( cofile )						# create JavaScript string
+			#console.log "creating dir: #{file.trgDir}"				# create target dirs
+			mkdir(file.trgDir)
 
-			fs.writeFileSync(file.trgFile, jsfile )
+			fs.writeFileSync(file.trgFile, jsfile )					# save JavaScript file
 			
 			file.error = false
 			
-			console.log "#{path2gedit(file.trgFile)}:#{pad} written."
+			console.log "#{path2edit(file.trgFile)}:#{pad} written." if config.logWrites
 			
 		catch error
 			regex_match_linenumber = /line\s*\d*\:/
@@ -119,11 +124,11 @@ build = (task, buildfiles = []) ->
 						.replace(/Parse\serror\son\s*/,"")
 						.replace(/Error:\sIn\s*/, "")
 
-				console.error "#{path2gedit(file.src)}:#{line}:#{pad.substr(line.length)} #{msg}"
+				console.error "#{path2edit(file.srcFile)}:#{line}:#{pad.substr(line.length)} #{msg}"
 			catch error
-				console.error "#{path2gedit(file.src)}:#{pad} Unexpected compile error:\n #{ error.message }"
+				console.error "#{path2edit(file.srcFile)}:#{pad} Unexpected compile error:\n #{ error.message }", error
 
-		#exec "coffee -o #{ file.trg } -c #{ file.src }", (error, stdout, stderr) ->
+		#exec "coffee -o #{ file.trgDir } -c #{ file.srcFile }", (error, stdout, stderr) ->
 		#	if error
 
 		#errorInfo = error.message.match(/\s*Error.*In.*line.*\n/)[0]
@@ -158,9 +163,16 @@ build = (task, buildfiles = []) ->
 	cofiles = []
 	findCoffeeFiles(findSrcDir("."), cofiles)
 
-	files = (file for file in cofiles when !isBuildFile(file))
+	files = (file for file in cofiles when !CHK.isBuildFile(file))
 
-	filemap = ({ src: file, trg: src2lib(file), trgFile: src2lib(file, true) } for file in files)
+	filemap_all = ({ srcFile: file, trgDir: src2lib(file), trgFile: src2lib(file, true) } for file in files)
+	
+	excludemap = (baditem for baditem in filemap_all when baditem.trgFile == baditem.srcFile)
+	if excludemap.length > 0
+		filemap = (item for item in filemap_all when not item in excludemap)
+		console.log "Removed #{filemap.length-excludemap.length} items from file list to prevent overwrites."
+	else
+		filemap = filemap_all
 
 	#console.log filemap
 
@@ -176,7 +188,7 @@ test = (cofile) ->
 	build "test", [cofile]
 
 buildAll = ->
-	build "all"	
+	build "all"
 
 module.exports.buildAll = buildAll
 module.exports.test = test

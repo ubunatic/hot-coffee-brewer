@@ -1,0 +1,5 @@
+REX = require("./tmp_comatch.js").CoRegex
+
+console.log "Testing comatch.co", REX
+
+

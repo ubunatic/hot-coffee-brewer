@@ -1,0 +1,14 @@
+buildfiles = [
+	"./.hotcoffee/tools/compile.co"
+	"./.hotcoffee/tools/cotest.co"
+	"./.hotcoffee/tools/cocheck.co"
+	"./.hotcoffee/tools/comatch.co"
+	"./.hotcoffee/tools/tastecoffee.co"
+	"./.hotcoffee/test/test_match.co"
+]
+
+CoCheck =
+    isBuildFile: (file) -> return file in buildfiles
+
+module.exports.CoCheck = CoCheck;
+

@@ -1,0 +1,8 @@
+CoRegex =
+	match_srcpath: /^[\.\/]*\/src\//
+	match_cofile: /\/[^\/]*\.co$/
+	match_coext: /\.co$/
+	
+module.exports.CoRegex = CoRegex
+
+

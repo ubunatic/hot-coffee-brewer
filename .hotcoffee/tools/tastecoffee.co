@@ -1,0 +1,3 @@
+console.log "Running self tests."
+require "./tmp_test_match.js"
+

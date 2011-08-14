@@ -1,5 +1,14 @@
-/*  Copyright (c) 2011 Uwe Jugel
-	
+/*
+
+Copyright (c) 2011 Uwe Jugel
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
 	Hot Coffee Brewer
 	=================
 	
@@ -13,10 +22,10 @@
 	- runs on Linux AND Windows
 	
 	Usage: call buildAll() or test(<file>) in your build script
-	
+
 	https://github.com/ubunatic/Hot-Coffee-Brewer
-	
-	
+
+
 	Attention: 'require' works differently than 'readFileSync' etc.
 	           take care for correct path names if you modify anything
 */
@@ -44,12 +53,21 @@ if (buildDirFound) {
 	// build coffee build tools
 	// read tools from .hotcoffee/tools
 	// save js-files to .hotcoffee/.tmp
-	cofile = fs.readFileSync("./.hotcoffee/tools/compile.co", "UTF8")
-	jsfile = coffee.compile( cofile )
-	fs.writeFileSync("./.hotcoffee/tmp_compile.js", jsfile )
-	cofile = fs.readFileSync("./.hotcoffee/tools/cotest.co", "UTF8")
-	jsfile = coffee.compile( cofile )
-	fs.writeFileSync("./.hotcoffee/tmp_cotest.js", jsfile )
+	var cofiles, cotests, len, idx;
+
+	cofiles = [ "compile", "cotest", "comatch", "cocheck", "tastecoffee" ];
+	cotests = [ "test_match" ];
+
+	for( idx=0, len=cofiles.length; idx < len; idx += 1){
+		cofile = fs.readFileSync("./.hotcoffee/tools/" + cofiles[idx] + ".co", "UTF8")
+		jsfile = coffee.compile( cofile )
+		fs.writeFileSync("./.hotcoffee/tmp_" + cofiles[idx] + ".js", jsfile )
+	}
+	for( idx=0, len=cotests.length; idx < len; idx += 1){
+		cofile = fs.readFileSync("./.hotcoffee/test/" + cotests[idx] + ".co", "UTF8")
+		jsfile = coffee.compile( cofile )
+		fs.writeFileSync("./.hotcoffee/tmp_" + cotests[idx] + ".js", jsfile )
+	}
 }
 
 //export the build functions
