@@ -1,5 +1,13 @@
-REX = require("./tmp_comatch.js").CoRegex
+# tests for ../tools/comatch.co
+{assert} = require("./tmp_test.js").Test
 
-console.log "Testing comatch.co", REX
+assert "comatch", REX = require("./tmp_comatch.js").CoRegex
+
+console.log "Testing comatch.co"
+
+assert "srcpath", REX.match_srcpath.test "./src/"
+assert "cofile",  REX.match_cofile.test  "./bla/supertest-file.co"
+assert "coext",   REX.match_coext.test   "./bla/supertest-file.co"
+
 
 

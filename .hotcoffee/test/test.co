@@ -1,0 +1,10 @@
+# tested by test_test.co
+
+assert = (name, expr) ->
+	if expr then return true
+	else
+		console.log "Error: test #{name} failed with #{expr}"
+		return false
+
+module.exports.Test = { assert:assert }
+

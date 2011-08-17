@@ -1,3 +1,5 @@
+# tested by ../test/test_check.co
+
 buildfiles = [
 	"./.hotcoffee/tools/compile.co"
 	"./.hotcoffee/tools/cotest.co"
@@ -5,6 +7,10 @@ buildfiles = [
 	"./.hotcoffee/tools/comatch.co"
 	"./.hotcoffee/tools/tastecoffee.co"
 	"./.hotcoffee/test/test_match.co"
+	"./.hotcoffee/test/test_check.co"
+	"./.hotcoffee/test/test_test.co"
+	"./.hotcoffee/test/test_compile.co"
+	"./.hotcoffee/test/test.co"
 ]
 
 CoCheck =

@@ -1,0 +1,14 @@
+# tests for ../tools/cocheck.co
+
+{assert} = require("./tmp_test.js").Test
+
+assert "cocheck", CHK = require("./tmp_cocheck.js").CoCheck
+
+console.log "Testing cocheck.co"
+
+assert "buildfile", CHK.isBuildFile "./.hotcoffee/test/test.co"
+
+
+
+
+

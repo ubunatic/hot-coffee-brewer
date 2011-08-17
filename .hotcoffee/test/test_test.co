@@ -1,0 +1,16 @@
+# tests for ../test/test.co
+
+{assert} = require("./tmp_test.js").Test
+
+if assert
+	console.log "Test unit loaded"
+else
+	console.log "Error: loading test unit."
+
+console.log "Testing test.co"
+
+
+
+
+
+

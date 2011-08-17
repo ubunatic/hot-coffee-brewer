@@ -1,3 +1,7 @@
 console.log "Running self tests."
+require "./tmp_test.js"
 require "./tmp_test_match.js"
+require "./tmp_test_compile.js"
+require "./tmp_test_test.js"
+require "./tmp_test_check.js"
 

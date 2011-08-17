@@ -56,7 +56,7 @@ if (buildDirFound) {
 	var cofiles, cotests, len, idx;
 
 	cofiles = [ "compile", "cotest", "comatch", "cocheck", "tastecoffee" ];
-	cotests = [ "test_match" ];
+	cotests = [ "test_match", "test_check", "test_test", "test_compile", "test" ];
 
 	for( idx=0, len=cofiles.length; idx < len; idx += 1){
 		cofile = fs.readFileSync("./.hotcoffee/tools/" + cofiles[idx] + ".co", "UTF8")

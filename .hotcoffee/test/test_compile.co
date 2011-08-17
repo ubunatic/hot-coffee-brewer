@@ -1,0 +1,13 @@
+# tests for ../tools/compile.co
+
+{assert} = require("./tmp_test.js").Test
+
+assert "compile", buildAll = require("./tmp_compile.js").buildAll
+
+console.log "Testing compile.co"
+
+
+
+
+
+
