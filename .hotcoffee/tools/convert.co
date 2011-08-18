@@ -1,0 +1,25 @@
+# tested by ../test/test_convert.co
+
+REX = require("./tmp_comatch").CoRegex							# load prebuilt matches
+src2lib = (file, keepFileName=false) ->
+	prefix = file.match(REX.match_srcpath)						# check if folder is like "./src/..."
+	
+	if !prefix then prefix = "" else prefix = prefix[0]			# save src prefix
+	
+	file = prefix.replace("src","lib") + file.replace(REX.match_srcpath, "") # replace src with lib
+	if keepFileName
+		file = file.replace(REX.match_coext, ".js")				# replace extension
+	else
+		file = file.replace(REX.match_cofile, "")				# remove filename
+	return file
+
+#string2files = (string) ->
+#	(file for file in (string.split "\n") when file.trim() != "")
+
+padString = (string, maxLength, padChar=" ") ->					# generate padding for a string + maxLength
+	(padChar for char in [1..Math.max(maxLength-string.length,0)]).join("")
+
+
+module.exports =
+	src2lib: src2lib
+	padString: padString

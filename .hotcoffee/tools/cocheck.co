@@ -1,20 +1,12 @@
 # tested by ../test/test_check.co
 
-buildfiles = [
-	"./.hotcoffee/tools/compile.co"
-	"./.hotcoffee/tools/cotest.co"
-	"./.hotcoffee/tools/cocheck.co"
-	"./.hotcoffee/tools/comatch.co"
-	"./.hotcoffee/tools/tastecoffee.co"
-	"./.hotcoffee/test/test_match.co"
-	"./.hotcoffee/test/test_check.co"
-	"./.hotcoffee/test/test_test.co"
-	"./.hotcoffee/test/test_compile.co"
-	"./.hotcoffee/test/test.co"
-]
+buildmatch = /^\.\/\.hotcoffee\/tools\/.*/
+testmatch = /^\.\/\.hotcoffee\/test\/.*/
 
 CoCheck =
-    isBuildFile: (file) -> return file in buildfiles
+    isBuildFile: (file) -> return buildmatch.test(file) || testmatch.test(file)
+	buildmatch: buildmatch
+	testmatch: testmatch
 
-module.exports.CoCheck = CoCheck;
+module.exports.CoCheck = CoCheck
 

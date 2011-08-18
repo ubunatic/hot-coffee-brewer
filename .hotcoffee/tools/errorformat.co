@@ -1,0 +1,17 @@
+# tested by ../test/test_convert.co
+# TODO: implement and write tests
+
+currentEditor = "vim"
+
+path2edit = (path) ->											# format output for editors
+	#switch currentEditor
+	#	when "Gedit" then path.replace("./","")
+	#	when "vim" then path.replace("./","")
+	path.replace "./", ""
+
+setEditor = (editor) ->
+	currentEditor = editor
+
+module.exports =
+	path2edit: path2edit
+	setEditor: setEditor

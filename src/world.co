@@ -41,6 +41,7 @@ class World
 TurnCode =
 	OK: "Turn OK."
 	FAILED: "Turn failed!"
+
 	
 module.exports.TurnCode = TurnCode
 module.exports.World = World

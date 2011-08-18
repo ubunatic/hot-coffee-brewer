@@ -1,13 +1,13 @@
 # tests for ../test/test.co
 
 {assert} = require("./tmp_test.js").Test
+console.log "Testing test.co"
 
 if assert
-	console.log "Test unit loaded"
+	console.log "Test module loaded"
 else
 	console.log "Error: loading test unit."
 
-console.log "Testing test.co"
 
 
 

@@ -53,19 +53,19 @@ if (buildDirFound) {
 	// build coffee build tools
 	// read tools from .hotcoffee/tools
 	// save js-files to .hotcoffee/.tmp
-	var cofiles, cotests, len, idx;
+	var cofiles, cotests, len, idx, cofile, jsfile;
 
-	cofiles = [ "compile", "cotest", "comatch", "cocheck", "tastecoffee" ];
-	cotests = [ "test_match", "test_check", "test_test", "test_compile", "test" ];
+	cofiles = [ "compile", "cotest", "comatch", "cocheck", "convert", "errorformat", "tastecoffee" ];
+	cotests = [ "test_match", "test_check", "test_test", "test_compile", "test_convert", "test" ];
 
 	for( idx=0, len=cofiles.length; idx < len; idx += 1){
 		cofile = fs.readFileSync("./.hotcoffee/tools/" + cofiles[idx] + ".co", "UTF8")
-		jsfile = coffee.compile( cofile )
+		jsfile = coffee.compile( cofile, { filename: "./.hotcoffee/tools/" + cofiles[idx] + ".co" } )
 		fs.writeFileSync("./.hotcoffee/tmp_" + cofiles[idx] + ".js", jsfile )
 	}
 	for( idx=0, len=cotests.length; idx < len; idx += 1){
 		cofile = fs.readFileSync("./.hotcoffee/test/" + cotests[idx] + ".co", "UTF8")
-		jsfile = coffee.compile( cofile )
+		jsfile = coffee.compile( cofile, { filename: "./.hotcoffee/test/" + cotests[idx] + ".co" }  )
 		fs.writeFileSync("./.hotcoffee/tmp_" + cotests[idx] + ".js", jsfile )
 	}
 }

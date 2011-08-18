@@ -1,5 +1,7 @@
 # Copyright (c) 2011 Uwe Jugel
 
+"bla"
+
 say = (args...)-> console.log.apply console, args
 
 test1 = do ->

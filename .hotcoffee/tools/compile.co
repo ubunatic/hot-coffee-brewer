@@ -22,33 +22,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 # tasks: all, test
 build = (task, buildfiles = []) ->
-	coffee = require("./tools/coffee.js").CoffeeScript				# load coffee compiler
-	REX    = require("./tmp_comatch.js").CoRegex					# load prebuilt matches
-	CHK    = require("./tmp_cocheck.js").CoCheck					# load prebuilt checks
-	cotest = require("./tmp_cotest.js")								# load prebuilt hotcoffe tester
-	config =
+	coffee = require("./tools/coffee").CoffeeScript				# load coffee compiler
+	REX    = require("./tmp_comatch").CoRegex					# load prebuilt matches
+	CHK    = require("./tmp_cocheck").CoCheck					# load prebuilt checks
+	{src2lib, padString} = require("./tmp_convert")					# load prebuilt checks
+	{path2edit, setEditor} = require("./tmp_errorformat")						# load prebuilt checks
+	cotest = require("./tmp_cotest")								# load prebuilt hotcoffe tester
+	config =														# TODO: extract editor format in separate files
 		editor: "Gedit"												# supported: "Gedit"; planned: "NotepadPP", "Eclipse"
 		logWrites: no
 		formatErrors: no
+
+	setEditor config.editor
 	
 	fs = require "fs"
-	#test 
 
-	src2lib = (file, keepFileName=false) ->
-		prefix = file.match(REX.match_srcpath)						# check if folder is like "./src/..."
-		
-		if !prefix then prefix = "" else prefix = prefix[0]			# save src prefix
-		
-		file = prefix.replace("src","lib") + file.replace(REX.match_srcpath, "") # replace src with lib
-		if keepFileName
-			file = file.replace(REX.match_coext, ".js")				# replace extension
-		else
-			file = file.replace(REX.match_cofile, "")				# remove fileame
-		return file
-		
-	string2files = (string) ->
-		(file for file in (string.split "\n") when file.trim() != "")
-		
 	findCoffeeFiles = (dirname, files) ->							# savely find all .co file in a dir
 		dir = fs.readdirSync(dirname)
 		
@@ -92,19 +80,12 @@ build = (task, buildfiles = []) ->
 		
 		mkdir_p path.split("/"), 0
 
-	padString = (string, maxLength, padChar=" ") ->					# generate padding for a string + maxLength
-		(padChar for char in [1..Math.max(maxLength-string.length,0)]).join("")
-		
-	path2edit = (path) ->											# format output for editors
-		switch config.editor
-			when "Gedit" then path.replace("./","")
-		
 	compileFile = (file) ->
 		pad = padString(file.trgFile, 30)
 
 		try
 			cofile = fs.readFileSync(file.srcFile, "UTF8")				# read .co source
-			jsfile = coffee.compile( cofile )						# create JavaScript string
+			jsfile = coffee.compile( cofile, { filename: file.srcFile } )						# create JavaScript string
 			#console.log "creating dir: #{file.trgDir}"				# create target dirs
 			mkdir(file.trgDir)
 
@@ -118,25 +99,16 @@ build = (task, buildfiles = []) ->
 			regex_match_linenumber = /line\s*\d*\:/
 			file.error = true
 			msg = error.message
-			try
-				line = msg.match(regex_match_linenumber)[0].replace(/line\s*/,"").replace(":","")
-				msg = msg.replace(regex_match_linenumber, "")
-						.replace(/Parse\serror\son\s*/,"")
-						.replace(/Error:\sIn\s*/, "")
+			console.log "Error: " + error.message
+			#try
+			#	line = msg.match(regex_match_linenumber)[0].replace(/line\s*/,"").replace(":","")
+			#	msg = msg.replace(regex_match_linenumber, "")
+			#			.replace(/Parse\serror\son\s*/,"")
+			#			.replace(/Error:\sIn\s*/, "")
 
-				console.error "#{path2edit(file.srcFile)}:#{line}:#{pad.substr(line.length)} #{msg}"
-			catch error
-				console.error "#{path2edit(file.srcFile)}:#{pad} Unexpected compile error:\n #{ error.message }", error
-
-		#exec "coffee -o #{ file.trgDir } -c #{ file.srcFile }", (error, stdout, stderr) ->
-		#	if error
-
-		#errorInfo = error.message.match(/\s*Error.*In.*line.*\n/)[0]
-		#errorFile = errorInfo.replace(/\s*Error.*In\s*/,"").split(",")[0]
-		#errorLine = errorInfo.split(":")[1].replace(/.*line\s*/,"")
-		#errorText = errorInfo.split(":")[2]
-
-		#console.log errorFile+":"+errorLine+":"+errorText
+			#	console.error "#{path2edit(file.srcFile)}:#{line}:#{pad.substr(line.length)} #{msg}"
+			#catch error
+			#	console.error "#{path2edit(file.srcFile)}:#{pad} Unexpected compile error:\n #{ error.message }", error
 	
 	runTest = (file) ->
 		jsfile = src2lib(file, true)
@@ -173,8 +145,6 @@ build = (task, buildfiles = []) ->
 		console.log "Removed #{filemap.length-excludemap.length} items from file list to prevent overwrites."
 	else
 		filemap = filemap_all
-
-	#console.log filemap
 
 	switch task
 		when "all"
