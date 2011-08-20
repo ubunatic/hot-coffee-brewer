@@ -22,14 +22,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 # tasks: all, test
 build = (task, buildfiles = []) ->
-	coffee = require("./tools/coffee").CoffeeScript				# load coffee compiler
-	REX    = require("./tmp_comatch").CoRegex					# load prebuilt matches
-	CHK    = require("./tmp_cocheck").CoCheck					# load prebuilt checks
-	{src2lib, padString} = require("./tmp_convert")					# load prebuilt checks
-	{path2edit, setEditor} = require("./tmp_errorformat")						# load prebuilt checks
-	cotest = require("./tmp_cotest")								# load prebuilt hotcoffe tester
-	config =														# TODO: extract editor format in separate files
-		editor: "Gedit"												# supported: "Gedit"; planned: "NotepadPP", "Eclipse"
+	coffee = require("./coffee").CoffeeScript				# load coffee compiler
+	REX    = require("./comatch").CoRegex					# load prebuilt matches
+	CHK    = require("./cocheck").CoCheck					# load prebuilt checks
+	{src2lib, padString} = require("./convert")				# load prebuilt checks
+	{path2edit, setEditor} = require("./errorformat")		# load prebuilt checks
+	cotest = require("./cotest")							# load prebuilt hotcoffe tester
+	config =												# TODO: extract editor format in separate files
+		editor: "Gedit"										# supported: "Gedit"; planned: "NotepadPP", "Eclipse"
 		logWrites: no
 		formatErrors: no
 
@@ -37,7 +37,7 @@ build = (task, buildfiles = []) ->
 	
 	fs = require "fs"
 
-	findCoffeeFiles = (dirname, files) ->							# savely find all .co file in a dir
+	findCoffeeFiles = (dirname, files) ->					# savely find all .co file in a dir
 		dir = fs.readdirSync(dirname)
 		
 		for file in dir then do ->
@@ -49,7 +49,7 @@ build = (task, buildfiles = []) ->
 				files.push(dirname+"/"+statFile)
 
 	updir_count = 0
-	findSrcDir = (dirname) ->										# savely find ./src dir
+	findSrcDir = (dirname) ->								# savely find ./src dir
 		try
 			dir = fs.readdirSync dirname+"/src"
 			return dirname
@@ -61,7 +61,7 @@ build = (task, buildfiles = []) ->
 				updir_count++
 				return findSrcDir(dirname+"/..")
 
-	mkdir = (path) ->												# savely create target dirs
+	mkdir = (path) ->										# savely create target dirs
 		mkdir_p = (parts, idx) ->
 			if parts.length > idx
 				try
@@ -84,12 +84,11 @@ build = (task, buildfiles = []) ->
 		pad = padString(file.trgFile, 30)
 
 		try
-			cofile = fs.readFileSync(file.srcFile, "UTF8")				# read .co source
-			jsfile = coffee.compile( cofile, { filename: file.srcFile } )						# create JavaScript string
-			#console.log "creating dir: #{file.trgDir}"				# create target dirs
+			cofile = fs.readFileSync file.srcFile, "UTF8"					# read .co source
+			jsfile = coffee.compile  cofile, { filename: file.srcFile }		# create JavaScript string
 			mkdir(file.trgDir)
 
-			fs.writeFileSync(file.trgFile, jsfile )					# save JavaScript file
+			fs.writeFileSync(file.trgFile, jsfile )							# save JavaScript file
 			
 			file.error = false
 			

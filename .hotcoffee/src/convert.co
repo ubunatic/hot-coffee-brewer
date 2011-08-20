@@ -1,6 +1,6 @@
-# tested by ../test/test_convert.co
+# tested by ./test/test_convert.co
 
-REX = require("./tmp_comatch").CoRegex							# load prebuilt matches
+REX = require("./comatch").CoRegex							# load prebuilt matches
 src2lib = (file, keepFileName=false) ->
 	prefix = file.match(REX.match_srcpath)						# check if folder is like "./src/..."
 	

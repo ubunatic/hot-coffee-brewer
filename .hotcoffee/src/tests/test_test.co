@@ -1,6 +1,6 @@
-# tests for ../test/test.co
+# tests for ../tests/test.co
 
-{assert} = require("./tmp_test.js").Test
+{assert} = require("./test").Test
 console.log "Testing test.co"
 
 if assert

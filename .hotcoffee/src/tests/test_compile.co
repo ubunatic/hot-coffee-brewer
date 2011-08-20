@@ -1,0 +1,7 @@
+# tests for ../compile.co
+
+{assert} = require("./test").Test
+console.log "Testing compile.co"
+
+assert "compile", buildAll = require("../compile").buildAll
+

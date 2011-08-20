@@ -1,8 +1,11 @@
-hcbrew = require("./.hotcoffee/tools/hotcoffee")   // load hcb
-coffee = require("./.hotcoffee/tools/coffee")      // load cake
+//coffee = require("./.hotcoffee/lib/coffee")      // load cake
+//hcbrew = require("./.hotcoffee/lib/hotcoffee")   // load hcb
 
-hcbrew.buildAll()                                  // build hcb and project
+// hcbrew.buildAll()                                  // build hcb and project
 // hcbrew.test("./src/test.co")                       // run project tests
 
-hctest = require("./.hotcoffee/tmp_tastecoffee")   // hcb selftest - You may remove this
+hcb = require("./.hotcoffee/hcb.js");
+hcb.buildAll();
+
+//hctest = require("./.hotcoffee/lib/tastecoffee")   // hcb selftest - You may remove this
 

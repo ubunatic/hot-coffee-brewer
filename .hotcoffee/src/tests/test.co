@@ -1,4 +1,4 @@
-# tested by ../test/test_test.co
+# tested by ../tests/test_test.co
 
 assert = (name, expr) ->
 	if expr then return true

@@ -1,9 +1,9 @@
-# tests for ../tools/comatch.co
+# tests for ../comatch.co
 
-{assert} = require("./tmp_test").Test
+{assert} = require("./test").Test
 console.log "Testing comatch.co"
 
-assert "comatch", REX = require("./tmp_comatch").CoRegex
+assert "comatch", REX = require("../comatch").CoRegex
 
 assert "srcpath", REX.match_srcpath.test "./src/"
 assert "cofile",  REX.match_cofile.test  "./bla/supertest-file.co"

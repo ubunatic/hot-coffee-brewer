@@ -1,7 +1,7 @@
-# tested by ../test/test_check.co
+# tested by ./tests/test_check.co
 
-buildmatch = /^\.\/\.hotcoffee\/tools\/.*/
-testmatch = /^\.\/\.hotcoffee\/test\/.*/
+buildmatch = /^\.\/\.hotcoffee\/src\/.*/
+testmatch = /^\.\/\.hotcoffee\/src\/tests\/.*/
 
 CoCheck =
     isBuildFile: (file) -> return buildmatch.test(file) || testmatch.test(file)

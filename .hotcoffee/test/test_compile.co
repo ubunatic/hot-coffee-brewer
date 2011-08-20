@@ -1,7 +1,0 @@
-# tests for ../tools/compile.co
-
-{assert} = require("./tmp_test").Test
-console.log "Testing compile.co"
-
-assert "compile", buildAll = require("./tmp_compile").buildAll
-

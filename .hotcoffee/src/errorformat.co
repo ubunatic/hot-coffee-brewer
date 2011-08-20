@@ -1,4 +1,4 @@
-# tested by ../test/test_convert.co
+# tested by ./tests/test_convert.co
 # TODO: implement and write tests
 
 currentEditor = "vim"
