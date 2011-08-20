@@ -6,9 +6,9 @@ Licensed under the MIT license (see LICENSE file)
 Hot Coffee Brewer
 =================
 
-Hot Coffee Brewer can compile your CoffeeScript files using node.js.
-It uses only node.js and coffee.js has no other dependencies.
-Therefore it uses CoffeeScript.compile provides by coffee.js
+Hot Coffee Brewer can compile your CoffeeScript files using node.js. It uses only
+node.js and coffee.js has no other dependencies. This is achieved by doing all
+compiling with CoffeeScript.compile provided by coffee.js
 
 Hot Coffee Brewer runs on Linux AND Windows!
 Fork me on GitHub: https://github.com/ubunatic/Hot-Coffee-Brewer
@@ -19,9 +19,11 @@ Project Contents
 
 Hot Coffee Brewer comprises the following parts:
 
-		.hotcoffee/tools/hotcoffee.js:    # compiles 'compile.co' and 'cotest.co'
-		.hotcoffee/tools/compile.co:      # compiles *.co in ./src to *.js in ./lib
-		.hotcoffee/tools/cotest.co:       # runs tests on compiled JavaScript files
+		.hotcoffee/hcb.js:                # compiles 'hotcoffee.co'
+		.hotcoffee/src/hotcoffee.co       # compiles all build scripts
+		.hotcoffee/src/tastecoffe.co:     # runs self tests
+		.hotcoffee/src/**                 # more hcb component files
+		.hotcoffee/lib/coffee.js          # a copy of the full coffee-script module
 
 		build.js:                         # sample buildfile calls hotcoffee.js
 		src/world.co                      # sample CoffeeScript class 'World'
@@ -50,7 +52,7 @@ Hot Coffee Issues
 -----------------
 Many things are hard coded. You may want to change some of the files.
 
-* Issue 1: compiles only .co files (no .coffee files)
+* Issue 1: compiles only .co files (no .coffee files yet)
 * Issue 2: filters error output and reformats is to better serve Gedit (Linux)
 * Issue 3: no error grepping for other editors/IDEs
 
