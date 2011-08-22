@@ -110,25 +110,53 @@ build = (task, buildfiles = []) ->
 			#	console.error "#{path2edit(file.srcFile)}:#{pad} Unexpected compile error:\n #{ error.message }", error
 	
 	runTest = (file) ->
-		jsfile = src2lib(file, true)
+		console.log "running test: #{file}"
+		cofile = file
+		allowRecompile = false
+		if REX.match_srcpath file                  # filename point to  ./src
+			if coext = REX.match_coext file        # filename has *.co ending
+				jsfile = src2lib(file, true)
+				allowRecompile = true              # allow compile test only if complete coffee file is specified
+			else
+				jsfile = src2lib(file, true) + ".js"
+		else if REX.match_libpath file             # filename points to ./lib			
+			if REX.match_jsext file                # filename has *.js ending
+				jsfile = file
+			else
+				jsfile = file + ".js"
+		else                                       # something went wrong neither js nor co
+			console.log "Error: In ./build.js, referenced file #{file} is not an js/co file, unknown line 1"
+			return 0
+		
 		tmpCompile = ""
-		cofile = ""
+		cocode = ""
 		isFile = false
 
-		try #recompile the cofile to test for compile errors
-			if cofile = fs.readFileSync(file, "UTF8")
-				tmpCompile = coffee.compile( cofile )
-		catch error
+		if allowRecompile                        # compile only if a coffee/co file ha been specified
+			try
+				cocode = fs.readFileSync(cofile, "UTF8")
+			catch error
+				console.log "Error: In #{cofile}, #{error.message}"
+				return 0
+			tmpCompile = coffee.compile  cocode, filename: cofile #recompile the cofile to test for compile errors
 
 		try isFile = fs.statSync(jsfile).isFile()
 		catch error
 		
-		if tmpCompile == "" && cofile != ""
-			console.error "compile.runTest: compile error in #{file}. Test stopped."
-		else if !isFile
-			console.error "compile.runTest: #{jsfile} not found. Test stopped."
+		console.log "running jsfile: #{jsfile}."
+
+		# if tmpCompile == "" && cocode != "" && allowRecompile
+		#	console.error "compile.runTest: compile error in #{file}. Test stopped."
+		# else
+
+		if !isFile
+			console.error "Error: compile.runTest: #{jsfile} not found. Test stopped."
 		else
-			cotest.test jsfile
+			if REX.match_relative jsfile
+				cotest.test process.cwd() + "/" + jsfile.replace REX.match_relative, ""
+			else
+				cotest.test jsfile
+				
 		
 
 	cofiles = []

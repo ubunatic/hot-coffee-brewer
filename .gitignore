@@ -1,2 +1,3 @@
 lib/*
-.hotcoffee/tmp_*
+.hotcoffee/lib/*
+

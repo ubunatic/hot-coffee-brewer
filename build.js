@@ -1,11 +1,7 @@
-//coffee = require("./.hotcoffee/lib/coffee")      // load cake
-//hcbrew = require("./.hotcoffee/lib/hotcoffee")   // load hcb
 
-// hcbrew.buildAll()                                  // build hcb and project
-// hcbrew.test("./src/test.co")                       // run project tests
+hcb = require("./.hotcoffee/hcb.js");  // load Hot Coffee Brewer (autobuilds itself if hcb not found)
+hcb.buildAll();                        // build all coffee files, looks for *.coffee and *.co files
+                                       // in ./src, compiles them and writes *.js files to ./lib
 
-hcb = require("./.hotcoffee/hcb.js");
-hcb.buildAll();
-
-//hctest = require("./.hotcoffee/lib/tastecoffee")   // hcb selftest - You may remove this
+hcb.test("./src/test")                 // run project tests
 
