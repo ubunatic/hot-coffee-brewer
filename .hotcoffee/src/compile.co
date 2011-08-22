@@ -110,7 +110,7 @@ build = (task, buildfiles = []) ->
 			#	console.error "#{path2edit(file.srcFile)}:#{pad} Unexpected compile error:\n #{ error.message }", error
 	
 	runTest = (file) ->
-		console.log "running test: #{file}"
+		# console.log "running test: #{file}"
 		cofile = file
 		allowRecompile = false
 		if REX.match_srcpath file                  # filename point to  ./src
@@ -143,7 +143,7 @@ build = (task, buildfiles = []) ->
 		try isFile = fs.statSync(jsfile).isFile()
 		catch error
 		
-		console.log "running jsfile: #{jsfile}."
+		# console.log "running jsfile: #{jsfile}."
 
 		# if tmpCompile == "" && cocode != "" && allowRecompile
 		#	console.error "compile.runTest: compile error in #{file}. Test stopped."
