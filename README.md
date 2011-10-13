@@ -48,6 +48,18 @@ Hot Coffee Usage
 This will compile all .co files in your ./src dir to .js files in ./lib
 and run all test files as specified in your build.js.
 
+Hot Coffee Installation
+-----------------------
+
+    git clone https://github.com/ubunatic/Hot-Coffee-Brewer.git new-project
+    cd new-project
+    node build.js
+    
+If everythings runs fine, you can remove the files from `./src` and create your own `*.co` files.
+You might also want to remove the `./.git` dir to allow your own git versioning (If I have time, I will make the `./.hotcoffee` a submodule rather than a template project).
+
+*Windows*: Make sure to add the `node.exe` to your system `PATH`.
+
 Hot Coffee Issues
 -----------------
 Many things are hard coded. You may want to change some of the files.
