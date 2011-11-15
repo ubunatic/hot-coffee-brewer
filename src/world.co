@@ -20,7 +20,7 @@ class World
 		if rounds != 0
 			rounds--
 			_world = this
-			turn this, (result) -> 
+			turn this, (result) ->
 				if result == TurnCode.OK
 					_world.spin(rounds)
 				else

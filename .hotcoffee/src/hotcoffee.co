@@ -56,8 +56,9 @@ buildSelf = ->                                       # compile the build script
 		  ./lib                       # target dir for compiled .js files
 		"""
 
-	if hcbDirFound                          # check if we are in the hcbDir and build coffee build tools
-		                                    # read tools from .hcb/src and save js-files to .hcb/lib
+	if hcbDirFound
+		# check if we are in the hcbDir and build coffee build tools
+		# read tools from .hcb/src and save js-files to .hcb/lib
 
 		cofiles = [ "compile", "cotest", "comatch", "cocheck", "convert", "errorformat", "tastecoffee" ]
 		cotests = [ "test_match", "test_check", "test_test", "test_compile", "test_convert", "test" ]
@@ -78,23 +79,25 @@ buildSelf = ->                                       # compile the build script
 			cofile = fs.readFileSync file.src, "UTF8"
 			jsfile = coffee.compile cofile, filename: file.trg
 			fs.writeFileSync file.trg, jsfile
-
+	
+	# auto load compile script after self compilation
 	compile = require "./compile"
 
 testSelf = ->
 	tastecoffee = require "./tastecoffee"
 
+# auto load/rebuild the compile module, required by hcb.buildAll()
 try
 	compile = require "./compile"
 catch error
 	console.log "Error: could not load HotCoffeeBrewer compile module."
-	console.log "I will try to compile it no."
-	buildSelf()
+	console.log "will try to compile it now..."
+	buildSelf() and testSelf()
 	console.log "HotCoffeeBrewer was rebuilt and loaded."
 
 module.exports.HotCoffeeBrewer =
 	testSelf: -> testSelf()
-	buildSelf: -> buildSelf(); testSelf()
+	buildSelf: -> buildSelf() and testSelf()
 	buildAll: -> compile.buildAll()
 	test: (file) -> compile.test file
 

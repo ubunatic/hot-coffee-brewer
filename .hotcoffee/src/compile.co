@@ -23,13 +23,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 # tasks: all, test
 build = (task, buildfiles = []) ->
 	coffee = require("./coffee").CoffeeScript				# load coffee compiler
-	REX    = require("./comatch").CoRegex					# load prebuilt matches
+	REX    = require("./comatch").CoRegexFn					# load prebuilt matches
 	CHK    = require("./cocheck").CoCheck					# load prebuilt checks
 	{src2lib, padString} = require("./convert")				# load prebuilt checks
 	{path2edit, setEditor} = require("./errorformat")		# load prebuilt checks
 	cotest = require("./cotest")							# load prebuilt hotcoffe tester
 	config =												# TODO: extract editor format in separate files
-		editor: "Gedit"										# supported: "Gedit"; planned: "NotepadPP", "Eclipse"
+		editor: "Vim"										# supported: "Gedit"; planned: "Vim", "NotepadPP", "Eclipse"
 		logWrites: no
 		formatErrors: no
 
@@ -95,10 +95,10 @@ build = (task, buildfiles = []) ->
 			console.log "#{path2edit(file.trgFile)}:#{pad} written." if config.logWrites
 			
 		catch error
-			regex_match_linenumber = /line\s*\d*\:/
+			# regex_match_linenumber = /line\s*\d*\:/
 			file.error = true
-			msg = error.message
-			console.log "Error: " + error.message
+			console.error error.stack
+
 			#try
 			#	line = msg.match(regex_match_linenumber)[0].replace(/line\s*/,"").replace(":","")
 			#	msg = msg.replace(regex_match_linenumber, "")
@@ -119,7 +119,7 @@ build = (task, buildfiles = []) ->
 				allowRecompile = true              # allow compile test only if complete coffee file is specified
 			else
 				jsfile = src2lib(file, true) + ".js"
-		else if REX.match_libpath file             # filename points to ./lib			
+		else if REX.match_libpath file             # filename points to ./lib
 			if REX.match_jsext file                # filename has *.js ending
 				jsfile = file
 			else

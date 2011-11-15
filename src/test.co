@@ -22,7 +22,7 @@ test1 = do ->
 
 	say '''
 	---------------------------------------------------
-	Starting async spinning...	
+	Starting async spinning...
 	\n'''
 	earth.spin(10)
 	thera.spin(10)
@@ -32,8 +32,10 @@ test1 = do ->
 
 test2 = ->
 	# further testing goes here
-	say '''			
+	say '''
 	Waited 100ms Worlds to finish spinning.
 	---------------------------------------------------
 	Testing finished!
 	'''
+
+	"

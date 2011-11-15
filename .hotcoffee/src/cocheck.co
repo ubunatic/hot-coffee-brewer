@@ -4,7 +4,7 @@ buildmatch = /^\.\/\.hotcoffee\/src\/.*/
 testmatch = /^\.\/\.hotcoffee\/src\/tests\/.*/
 
 CoCheck =
-    isBuildFile: (file) -> return buildmatch.test(file) || testmatch.test(file)
+	isBuildFile: (file) -> return buildmatch.test(file) || testmatch.test(file)
 	buildmatch: buildmatch
 	testmatch: testmatch
 

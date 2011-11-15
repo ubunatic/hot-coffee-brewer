@@ -6,7 +6,16 @@ CoRegex =
 	match_coext: /\.co$/
 	match_jsext: /\.js$/
 	match_relative: /^\.\//
+
+CoRegexFn = {}
+
+addMatcher = (name, match) ->
+	CoRegexFn[name] = (text) -> match.exec text
+	CoRegexFn[name].match = match
+
+addMatcher name, match for name, match of CoRegex
 	
-module.exports.CoRegex = CoRegex
+module.exports.CoRegexFn = CoRegexFn
+module.exports.CoRegex   = CoRegex
 
 

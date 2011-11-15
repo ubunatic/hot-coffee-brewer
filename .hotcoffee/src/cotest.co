@@ -36,7 +36,7 @@ lib2src = (line, js2co=true) ->
 
 		#tmplineLocation = tmpline.match(/\.\/src\/.*\:\d*\:/)[0]
 		tmplineLocation = tmpline.match(/\/.*\:\d*\:/)[0]
-		tmplineError = tmpline.replace(tmplineLocation,"");
+		tmplineError = tmpline.replace(tmplineLocation,"")
 		
 		if js2co
 			num = tmplineLocation.match(/\.co:\d*\:/)[0].replace(".co:","").replace(":","")
@@ -48,28 +48,30 @@ lib2src = (line, js2co=true) ->
 	catch error
 		return line
 
+extractErrorDetails = (error) ->
+	errorInfo = error.stack.split("\n")
+	errorInfo = (err for err in errorInfo when (
+			err.trim() != '' &&
+			!err.match(/^node.js:/) &&
+			!err.match(/^\s*throw/) &&
+			!err.match(/^\s*\^/)
+		)
+	)[0..3]
+
+	errorDetails = (lib2src(err) + "\n" + lib2src(err, false) for err in errorInfo[1..3])
+	return "\n" + errorInfo[0] + "\n" + errorDetails.join("\n") + "\ntest failed\n"
+
 test = (file) ->
 	try
 		jsmodule = require file
 	catch error
-		errorInfo = error.stack.split("\n")
-		errorInfo = (err for err in errorInfo when (
-				err.trim() != '' &&
-				!err.match(/^node.js:/) &&
-				!err.match(/^\s*throw/) &&
-				!err.match(/^\s*\^/)
-			)
-		)[0..3]
-	
-		errorDetails = (lib2src(err) + "\n" + lib2src(err, false) for err in errorInfo[1..3])
-
 		if error
-			process.stdout.write "\n" + errorInfo[0] + "\n" + errorDetails.join("\n") + "\ntest failed\n"
+			process.stderr.write error.stack  #all errors forwarded directly
 		else
 			process.stdout.write "test was successful\n"
 
-module.exports.test = (file) ->
-	console.log "running #{ file }"
+module.exports.test = (file, log=true) ->
+	console.log "running #{ file }" if log
 	test file
 		
 
