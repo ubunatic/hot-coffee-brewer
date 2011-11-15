@@ -21,7 +21,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ###
 
 # tasks: all, test
-build = (task, buildfiles = []) ->
+build = (task, taskfiles...) ->
 	coffee = require("./coffee").CoffeeScript				# load coffee compiler
 	REX    = require("./comatch").CoRegexFn					# load prebuilt matches
 	CHK    = require("./cocheck").CoCheck					# load prebuilt checks
@@ -95,24 +95,13 @@ build = (task, buildfiles = []) ->
 			console.log "#{path2edit(file.trgFile)}:#{pad} written." if config.logWrites
 			
 		catch error
-			# regex_match_linenumber = /line\s*\d*\:/
 			file.error = true
 			console.error error.stack
-
-			#try
-			#	line = msg.match(regex_match_linenumber)[0].replace(/line\s*/,"").replace(":","")
-			#	msg = msg.replace(regex_match_linenumber, "")
-			#			.replace(/Parse\serror\son\s*/,"")
-			#			.replace(/Error:\sIn\s*/, "")
-
-			#	console.error "#{path2edit(file.srcFile)}:#{line}:#{pad.substr(line.length)} #{msg}"
-			#catch error
-			#	console.error "#{path2edit(file.srcFile)}:#{pad} Unexpected compile error:\n #{ error.message }", error
 	
 	runTest = (file) ->
 		# console.log "running test: #{file}"
 		cofile = file
-		allowRecompile = false
+		allowRecompile = false                     # captures if a file may be compiled before running
 		if REX.match_srcpath file                  # filename point to  ./src
 			if coext = REX.match_coext file        # filename has *.co ending
 				jsfile = src2lib(file, true)
@@ -132,7 +121,7 @@ build = (task, buildfiles = []) ->
 		cocode = ""
 		isFile = false
 
-		if allowRecompile                        # compile only if a coffee/co file ha been specified
+		if allowRecompile                        # compile only if a coffee/co file has been specified
 			try
 				cocode = fs.readFileSync(cofile, "UTF8")
 			catch error
@@ -140,15 +129,11 @@ build = (task, buildfiles = []) ->
 				return 0
 			tmpCompile = coffee.compile  cocode, filename: cofile #recompile the cofile to test for compile errors
 
+		#TODO: maybe add some code for testing the tmpCompile
+
 		try isFile = fs.statSync(jsfile).isFile()
 		catch error
 		
-		# console.log "running jsfile: #{jsfile}."
-
-		# if tmpCompile == "" && cocode != "" && allowRecompile
-		#	console.error "compile.runTest: compile error in #{file}. Test stopped."
-		# else
-
 		if !isFile
 			console.error "Error: compile.runTest: #{jsfile} not found. Test stopped."
 		else
@@ -156,7 +141,6 @@ build = (task, buildfiles = []) ->
 				cotest.test process.cwd() + "/" + jsfile.replace REX.match_relative, ""
 			else
 				cotest.test jsfile
-				
 		
 
 	cofiles = []
@@ -166,6 +150,7 @@ build = (task, buildfiles = []) ->
 
 	filemap_all = ({ srcFile: file, trgDir: src2lib(file), trgFile: src2lib(file, true) } for file in files)
 	
+	# handle falsy file mappings, to protect overwrite of js/co files
 	excludemap = (baditem for baditem in filemap_all when baditem.trgFile == baditem.srcFile)
 	if excludemap.length > 0
 		filemap = (item for item in filemap_all when not item in excludemap)
@@ -178,14 +163,18 @@ build = (task, buildfiles = []) ->
 			for file in filemap
 				compileFile file
 		when "test"
-			runTest(buildfiles[0])
+			runTest(taskfiles[0])
 
 	
 test = (cofile) ->
-	build "test", [cofile]
+	build "test", cofile
 
 buildAll = ->
 	build "all"
 
 module.exports.buildAll = buildAll
 module.exports.test = test
+
+
+
+

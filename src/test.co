@@ -2,7 +2,7 @@
 
 "bla"
 
-say = (args...)-> console.log.apply console, args
+say = (args...)-> console.log args...
 
 test1 = do ->
 	say '''
