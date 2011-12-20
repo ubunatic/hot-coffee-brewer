@@ -51,7 +51,7 @@ and run all test files as specified in your build.js.
 Hot Coffee Installation
 -----------------------
 
-    git clone https://github.com/ubunatic/Hot-Coffee-Brewer.git new-project
+    git clone https://github.com/ubunatic/hot-coffee-brewer.git new-project
     cd new-project
     node build.js
     
