@@ -23,7 +23,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	
 	Usage: call buildAll() or test(<file>) in your build script
 
-	https://github.com/ubunatic/Hot-Coffee-Brewer
+	https://github.com/ubunatic/hot-coffee-brewer
 
 
 	Attention: 'require' works differently than 'readFileSync' etc.
