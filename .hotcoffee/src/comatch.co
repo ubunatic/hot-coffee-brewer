@@ -13,8 +13,9 @@ addMatcher = (name, match) ->
 	CoRegexFn[name] = (text) -> match.exec text
 	CoRegexFn[name].match = match
 
-addMatcher name, match for name, match of CoRegex
-	
+for name, match of CoRegex
+	addMatcher( name, match )
+
 module.exports.CoRegexFn = CoRegexFn
 module.exports.CoRegex   = CoRegex
 
