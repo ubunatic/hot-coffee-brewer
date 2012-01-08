@@ -16,7 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	- is used to compile *.co files in src to *.js files in lib
 	- runs in node.js in Linux and Windows (no dependencies)
 	
-	https://github.com/ubunatic/Hot-Coffee-Brewer
+	https://github.com/ubunatic/hot-coffee-brewer
 
 ###
 
