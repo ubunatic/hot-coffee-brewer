@@ -71,7 +71,7 @@ build = (task, taskfiles...) ->
 
 					if !dirExists
 						#console.log "creating: #{subpath}"
-						fs.mkdirSync subpath, 0777
+						fs.mkdirSync subpath, 0o777
 						
 					mkdir_p parts, idx+1
 						

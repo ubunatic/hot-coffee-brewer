@@ -71,7 +71,7 @@ buildSelf = ->                                       # compile the build script
 			src: "#{cwd}/#{hcbDir}/src/tests/#{file}.co"
 			trg: "#{cwd}/#{hcbDir}/lib/tests/#{file}.js"
 
-		try	fs.mkdirSync "#{cwd}/#{hcbDir}/lib/tests", 0777
+		try	fs.mkdirSync "#{cwd}/#{hcbDir}/lib/tests", 0o777
 
 		allfiles = filemap.concat testFilemap
 
