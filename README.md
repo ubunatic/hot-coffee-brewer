@@ -2,6 +2,14 @@ Copyright (c) 2011 Uwe Jugel
 
 Licensed under the MIT license (see LICENSE file)
 
+ATTENTION
+=========
+I no longer maintain this project.
+The coffee commandline tools finally works fine in Windows
+and I am using the pure coffee/Cakefile approach.
+Any additional tooling that this project provided has now moved directly to my .vimrc.
+Sorry, no support for other editors. This is just too much for me to maintain.
+
 
 Hot Coffee Brewer
 =================
