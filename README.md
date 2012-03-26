@@ -7,7 +7,7 @@ ATTENTION
 I no longer maintain this project.
 The coffee commandline tools finally works fine in Windows
 and I am using the pure coffee/Cakefile approach.
-Any additional tooling that this project provided has now moved directly to my .vimrc.
+Any additional tooling that this project provided has now moved directly to my [.vimrc](https://github.com/ubunatic/ubuntatic-dotfiles/blob/master/.vimrc).
 Sorry, no support for other editors. This is just too much for me to maintain.
 
 
